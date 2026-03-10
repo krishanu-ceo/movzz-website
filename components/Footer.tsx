@@ -135,10 +135,10 @@ export default function Footer() {
               >
                 +91 90074 88910
               </a>
-              <a href="#" className="block text-white/28 hover:text-white/65 text-sm transition-colors duration-200">
+              <a href="/privacy" className="block text-white/28 hover:text-white/65 text-sm transition-colors duration-200">
                 Privacy Policy
               </a>
-              <a href="#" className="block text-white/28 hover:text-white/65 text-sm transition-colors duration-200">
+              <a href="/terms" className="block text-white/28 hover:text-white/65 text-sm transition-colors duration-200">
                 Terms of Service
               </a>
             </div>
