@@ -154,7 +154,7 @@ export default function SocialProofSection() {
                 {isInView ? <CountUp end={s.value} duration={2} delay={0.5} /> : '0'}
                 {s.suffix}
               </div>
-              <p className="text-gray-400 text-sm">{s.label}</p>
+              <p className="text-white/38 text-sm">{s.label}</p>
             </motion.div>
           ))}
         </div>

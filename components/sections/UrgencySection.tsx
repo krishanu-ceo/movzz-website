@@ -150,17 +150,19 @@ export default function UrgencySection() {
               {b.highlight && (
                 <div className="absolute -top-3 left-6">
                   <div className="relative">
-                    <span
+                    <motion.span
+                      animate={{ boxShadow: ['0 0 0px rgba(14,165,233,0)', '0 0 16px rgba(14,165,233,0.5)', '0 0 0px rgba(14,165,233,0)'] }}
+                      transition={{ duration: 2.2, repeat: Infinity, ease: 'easeInOut' }}
                       className="text-[10px] font-bold tracking-[0.14em] uppercase px-3 py-1.5 rounded-full relative z-10"
                       style={{
-                        background: 'rgba(14,165,233,0.14)',
+                        background: 'rgba(14,165,233,0.16)',
                         color: '#0EA5E9',
-                        border: '1px solid rgba(14,165,233,0.3)',
+                        border: '1px solid rgba(14,165,233,0.38)',
                         display: 'inline-block',
                       }}
                     >
                       Most Popular
-                    </span>
+                    </motion.span>
                   </div>
                 </div>
               )}

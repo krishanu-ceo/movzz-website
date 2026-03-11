@@ -115,7 +115,7 @@ export default function MagicSection() {
             Here&apos;s How{' '}
             <span className="gradient-text-blue">Movzz Works</span>
           </h2>
-          <p className="text-white/38 text-base max-w-xl mx-auto font-mono tracking-wide">
+          <p className="text-white/55 text-base max-w-xl mx-auto font-mono tracking-wide">
             3 intelligence layers · 30+ signals · 1 guaranteed ride
           </p>
         </motion.div>
@@ -258,7 +258,7 @@ export default function MagicSection() {
               >
                 <Card3D intensity={9}>
                   <motion.div
-                    whileHover={{ y: -6 }}
+                    whileHover={{ y: -6, boxShadow: `0 20px 60px rgba(0,0,0,0.5), 0 0 50px ${g.color}28` }}
                     transition={{ type: 'spring', stiffness: 300, damping: 22 }}
                     className="rounded-2xl p-6 text-center h-full"
                     style={{

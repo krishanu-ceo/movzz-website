@@ -180,7 +180,7 @@ function AttemptCard({ phase }: { phase: Phase }) {
               <motion.div key="search" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
                 <div className="flex items-center gap-2 mb-4">
                   <div className="flex gap-0.5">
-                    {[0,1,2].map(i => <div key={i} className="w-1 h-1 rounded-full bg-blue-400/55 animate-bounce" style={{ animationDelay: `${i * 0.13}s` }} />)}
+                    {[0,1,2].map(i => <div key={i} className="w-1 h-3 rounded-full bg-blue-400/65 dot-pulse" style={{ animationDelay: `${i * 0.2}s` }} />)}
                   </div>
                   <span className="text-blue-400/55 text-xs">Searching for driver</span>
                 </div>

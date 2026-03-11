@@ -81,7 +81,7 @@ function PhoneDemo({ state }: { state: DemoState }) {
               <motion.div key="analyzing" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
                 <div className="flex items-center gap-1 mb-2">
                   {[0,1,2].map(i => (
-                    <div key={i} className="w-1 h-1 rounded-full bg-blue-400/55 animate-bounce" style={{ animationDelay: `${i * 0.15}s` }} />
+                    <div key={i} className="w-1 h-3 rounded-full bg-blue-400/65 dot-pulse" style={{ animationDelay: `${i * 0.2}s` }} />
                   ))}
                   <p className="text-blue-300/60 text-[10px] ml-1">Analyzing providers...</p>
                 </div>
@@ -216,9 +216,10 @@ export default function GlimmerSection() {
                 viewport={{ once: true }} transition={{ duration: 0.6, delay: i * 0.12 }}
                 className={`flex gap-4 p-5 rounded-2xl transition-all duration-500 ${
                   active
-                    ? 'border border-blue-500/22 bg-blue-950/20'
+                    ? 'border border-blue-500/30 bg-blue-950/25 scale-[1.01]'
                     : 'border border-white/[0.05] bg-white/[0.015]'
                 }`}
+              style={active ? { boxShadow: '0 0 30px rgba(37,99,235,0.1), inset 0 1px 0 rgba(37,99,235,0.08)' } : {}}
               >
                 <div className={`font-mono font-black text-xs mt-0.5 w-7 shrink-0 transition-colors duration-400 ${active ? 'text-blue-400/65' : 'text-white/18'}`}>
                   {num}

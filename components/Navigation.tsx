@@ -255,9 +255,12 @@ export default function Navigation() {
               { label: 'Why Movzz',    id: 'social-proof' },
               { label: 'Meet the Squad', id: 'team' },
               { label: 'Enlist Now',   id: 'waitlist', highlight: true },
-            ].map(({ label, id, highlight }) => (
-              <button
+            ].map(({ label, id, highlight }, i) => (
+              <motion.button
                 key={id}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.22, delay: i * 0.07, ease: [0.22, 1, 0.36, 1] }}
                 onClick={() => scrollTo(id)}
                 className={`text-left text-base font-medium py-3 px-3 rounded-xl transition-all ${
                   highlight
@@ -266,7 +269,7 @@ export default function Navigation() {
                 }`}
               >
                 {label}
-              </button>
+              </motion.button>
             ))}
 
             {/* HUD detail in mobile menu */}
