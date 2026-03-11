@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
-import nodemailer from 'nodemailer'
+import { Resend } from 'resend'
 
 const SHEET_WEBHOOK  = process.env.GOOGLE_SHEET_WEBHOOK_URL
+const RESEND_API_KEY = process.env.RESEND_API_KEY
 const GMAIL_USER     = process.env.GMAIL_USER
-const GMAIL_PASS     = process.env.GMAIL_APP_PASSWORD
 const FAST2SMS_KEY   = process.env.FAST2SMS_API_KEY
 const BASE_COUNT     = parseInt(process.env.WAITLIST_BASE_COUNT || '500', 10)
 
@@ -69,30 +69,23 @@ export async function POST(req: NextRequest) {
       }).catch(err => console.error('Sheet error:', err))
     }
 
-    // ── 2. Confirmation email via Gmail ───────────────────────
-    if (GMAIL_USER && GMAIL_PASS && email) {
+    // ── 2. Confirmation email via Resend ──────────────────────
+    if (RESEND_API_KEY && email) {
       try {
-        const transporter = nodemailer.createTransport({
-          host:       'smtp.gmail.com',
-          port:       587,
-          secure:     false,
-          requireTLS: true,
-          auth: { user: GMAIL_USER, pass: GMAIL_PASS },
-          tls: { rejectUnauthorized: false },
-        })
-        await transporter.sendMail({
-          from:    `"Movzz Waitlist" <${GMAIL_USER}>`,
+        const resend = new Resend(RESEND_API_KEY)
+        const { error } = await resend.emails.send({
+          from:    'Movzz Waitlist <onboarding@resend.dev>',
           to:      email,
-          replyTo: GMAIL_USER,
+          replyTo: GMAIL_USER ?? 'krishanu@movzzy.com',
           subject: `You're #${spotNumber} on the Movzz waitlist`,
           text:    buildEmailText(spotNumber, city),
           html:    buildEmailHtml(spotNumber, city),
-          headers: {
-            'X-Mailer': 'Movzz-Waitlist',
-            'Precedence': 'bulk',
-          },
         })
-        console.log(`[email] sent to ${email} (spot #${spotNumber})`)
+        if (error) {
+          console.error('[email] Resend error:', error)
+        } else {
+          console.log(`[email] sent to ${email} (spot #${spotNumber})`)
+        }
       } catch (err) {
         console.error('[email] FAILED to send to', email, '— error:', err)
       }
