@@ -52,7 +52,7 @@ const STATIC_STATS = [
 ]
 
 export default function SocialProofSection() {
-  const waitlistCount = useWaitlistCount()
+  const { count: waitlistCount } = useWaitlistCount()
   const stats = [
     { label: 'Beta Users Waiting', value: waitlistCount, suffix: '', prefix: '' },
     ...STATIC_STATS,

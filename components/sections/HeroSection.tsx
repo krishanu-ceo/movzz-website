@@ -333,7 +333,7 @@ function PanelUnlock() {
 
 /* ── Main Export ─────────────────────────────────────────────── */
 export default function HeroSection() {
-  const waitlistCount = useWaitlistCount()
+  const { count: waitlistCount } = useWaitlistCount()
   const [phase, setPhase]   = useState<Phase>('boot')
   const [stress, setStress] = useState(12)
   const [secs, setSecs]     = useState(150 * 60)

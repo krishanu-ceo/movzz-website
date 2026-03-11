@@ -337,7 +337,7 @@ function SuccessState({ spotNumber, city }: { spotNumber: number; city: string }
 }
 
 export default function WaitlistSection() {
-  const waitlistCount = useWaitlistCount()
+  const { count: waitlistCount, bump } = useWaitlistCount()
   const [formState, setFormState] = useState<FormState>('idle')
   const [spot, setSpot]   = useState(0)
   const [phone, setPhone] = useState('')
@@ -375,6 +375,7 @@ export default function WaitlistSection() {
       }
       const spotNum = data.spotNumber || waitlistCount + 1
       setSpot(spotNum)
+      bump()
       setPhone('')
       setEmail('')
       setCity('Chennai')
@@ -580,11 +581,28 @@ export default function WaitlistSection() {
           viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.4 }}
           className="flex flex-wrap justify-center gap-6 mt-7"
         >
-          {[
-            { label: `${waitlistCount.toLocaleString()} signed up` },
-            { label: 'No card needed' },
-            { label: 'Cancel anytime' },
-          ].map(({ label }) => (
+          {/* Animated signup count */}
+          <div className="flex items-center gap-1.5 text-white/28 text-sm">
+            <div className="w-1 h-1 rounded-full bg-white/30" />
+            <span className="flex items-baseline gap-1">
+              <span className="relative overflow-hidden inline-flex h-[1.25em]">
+                <AnimatePresence mode="popLayout" initial={false}>
+                  <motion.span
+                    key={waitlistCount}
+                    initial={{ y: '100%', opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    exit={{ y: '-100%', opacity: 0 }}
+                    transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                    className="inline-block tabular-nums"
+                  >
+                    {waitlistCount.toLocaleString()}
+                  </motion.span>
+                </AnimatePresence>
+              </span>
+              signed up
+            </span>
+          </div>
+          {['No card needed', 'Cancel anytime'].map(label => (
             <div key={label} className="flex items-center gap-1.5 text-white/28 text-sm">
               <div className="w-1 h-1 rounded-full bg-white/30" />
               <span>{label}</span>
