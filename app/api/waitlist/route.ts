@@ -3,19 +3,47 @@ import nodemailer from 'nodemailer'
 
 const SHEET_WEBHOOK  = process.env.GOOGLE_SHEET_WEBHOOK_URL
 const GMAIL_USER     = process.env.GMAIL_USER
-const GMAIL_PASS     = process.env.GMAIL_APP_PASSWORD   // Gmail App Password (not normal password)
+const GMAIL_PASS     = process.env.GMAIL_APP_PASSWORD
 const FAST2SMS_KEY   = process.env.FAST2SMS_API_KEY
 const BASE_COUNT     = parseInt(process.env.WAITLIST_BASE_COUNT || '500', 10)
 
+// ── In-memory rate limiting (per IP, resets on cold start) ────
+const rateLimitMap = new Map<string, number>()
+const RATE_LIMIT_MS = 60_000 // 1 request per IP per minute
+
+// ── Input validation ──────────────────────────────────────────
+function isValidEmail(email: string) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email.trim())
+}
+function isValidPhone(phone: string) {
+  const digits = phone.replace(/\D/g, '').slice(-10)
+  return digits.length === 10 && /^[6-9]/.test(digits)
+}
+
 export async function POST(req: NextRequest) {
   try {
+    // ── Rate limit by IP ───────────────────────────────────────
+    const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown'
+    const lastRequest = rateLimitMap.get(ip)
+    if (lastRequest && Date.now() - lastRequest < RATE_LIMIT_MS) {
+      return NextResponse.json({ error: 'Too many requests. Please wait a moment.' }, { status: 429 })
+    }
+    rateLimitMap.set(ip, Date.now())
+
     const { phone, email, city } = await req.json()
 
+    // ── Server-side validation ─────────────────────────────────
     if (!phone || !email) {
-      return NextResponse.json({ error: 'Missing fields' }, { status: 400 })
+      return NextResponse.json({ error: 'Phone and email are required.' }, { status: 400 })
+    }
+    if (!isValidEmail(email)) {
+      return NextResponse.json({ error: 'Please enter a valid email address.' }, { status: 400 })
+    }
+    if (!isValidPhone(phone)) {
+      return NextResponse.json({ error: 'Please enter a valid 10-digit Indian mobile number.' }, { status: 400 })
     }
 
-    // Sequential spot number based on actual sheet row count
+    // ── Get current sheet count for sequential spot number ─────
     let sheetRows = 0
     if (SHEET_WEBHOOK) {
       try {
@@ -58,30 +86,21 @@ export async function POST(req: NextRequest) {
       }).catch(err => console.error('Email error:', err))
     }
 
-    // ── 3. SMS via Fast2SMS (free credits, Indian) ────────────
+    // ── 3. SMS via Fast2SMS (fire-and-forget) ─────────────────
     if (FAST2SMS_KEY && phone) {
       const mobile = phone.replace(/\D/g, '').slice(-10)
       const msg = `Welcome to Movzz! You are #${spotNumber} on our waitlist. AI-confirmed rides in 8 seconds launching Chennai 2026. - Team Movzz`
-      await fetch('https://www.fast2sms.com/dev/bulkV2', {
+      fetch('https://www.fast2sms.com/dev/bulkV2', {
         method:  'POST',
-        headers: {
-          authorization: FAST2SMS_KEY,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          route:    'q',
-          message:  msg,
-          language: 'english',
-          flash:    0,
-          numbers:  mobile,
-        }),
+        headers: { authorization: FAST2SMS_KEY, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ route: 'q', message: msg, language: 'english', flash: 0, numbers: mobile }),
       }).catch(err => console.error('SMS error:', err))
     }
 
     return NextResponse.json({ success: true, spotNumber })
   } catch (err) {
     console.error('Waitlist API error:', err)
-    return NextResponse.json({ error: 'Server error' }, { status: 500 })
+    return NextResponse.json({ error: 'Server error. Please try again.' }, { status: 500 })
   }
 }
 

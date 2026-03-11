@@ -386,7 +386,7 @@ export default function HeroSection() {
         {PARTICLES.map((p, i) => (
           <motion.div
             key={i}
-            className="absolute rounded-full bg-blue-400"
+            className={`absolute rounded-full bg-blue-400${i % 2 === 1 ? ' hidden sm:block' : ''}`}
             style={{ left: `${p.x}%`, top: `${p.y}%`, width: p.size, height: p.size, opacity: p.opacity }}
             animate={{ y: [-10, 10, -10], opacity: [p.opacity, p.opacity * 3.5, p.opacity] }}
             transition={{ duration: p.dur, delay: p.delay, repeat: Infinity, ease: 'easeInOut' }}

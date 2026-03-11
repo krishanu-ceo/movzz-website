@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useWaitlistCount } from '@/hooks/useWaitlistCount'
 
-type FormState = 'idle' | 'submitting' | 'success'
+type FormState = 'idle' | 'submitting' | 'success' | 'error'
 
 const liveSignups = [
   'Priya K. just joined from Chennai',
@@ -49,6 +49,24 @@ function ConfettiPiece({ style }: { style: React.CSSProperties }) {
   return <div className="confetti-piece" style={style} />
 }
 
+function CopyButton({ text }: { text: string }) {
+  const [copied, setCopied] = useState(false)
+  return (
+    <button
+      onClick={() => {
+        navigator.clipboard?.writeText(text).then(() => {
+          setCopied(true)
+          setTimeout(() => setCopied(false), 2000)
+        })
+      }}
+      className="text-[11px] font-semibold transition-colors whitespace-nowrap"
+      style={{ color: copied ? '#4ade80' : 'rgba(96,165,250,0.7)' }}
+    >
+      {copied ? 'Copied!' : 'Copy'}
+    </button>
+  )
+}
+
 function SuccessState({ spotNumber, city }: { spotNumber: number; city: string }) {
   const [phase, setPhase]                     = useState<'flash' | 'main'>('flash')
   const [showDetails, setShowDetails]         = useState(false)
@@ -58,7 +76,8 @@ function SuccessState({ spotNumber, city }: { spotNumber: number; city: string }
 
   useEffect(() => {
     const COLORS = ['#2563EB','#3B82F6','#60A5FA','#93C5FD','#FFFFFF','#6366F1','#8B5CF6','#FBBF24','#F472B6']
-    setConfetti(Array.from({ length: 90 }, (_, i) => ({
+    const count = typeof window !== 'undefined' && window.innerWidth < 640 ? 40 : 90
+    setConfetti(Array.from({ length: count }, (_, i) => ({
       left:              `${(i * 13 + 3) % 100}%`,
       animationDuration: `${2 + (i % 5) * 0.4}s`,
       animationDelay:    `${(i * 0.07) % 1.4}s`,
@@ -290,12 +309,7 @@ function SuccessState({ spotNumber, city }: { spotNumber: number; city: string }
                     <p className="text-white/35 text-xs mb-3">Refer 3 friends → skip 100 spots + earn ₹100 extra</p>
                     <div className="flex items-center gap-2 rounded-xl px-3 py-2 mb-3" style={{ background: 'rgba(3,8,18,0.7)', border: '1px solid rgba(255,255,255,0.07)' }}>
                       <span className="text-white/45 text-xs font-mono flex-1 truncate">movzz.app/join/REF{spotNumber}</span>
-                      <button
-                        onClick={() => navigator.clipboard?.writeText(`movzz.app/join/REF${spotNumber}`)}
-                        className="text-[11px] text-blue-400/70 hover:text-blue-300 font-semibold transition-colors whitespace-nowrap"
-                      >
-                        Copy
-                      </button>
+                      <CopyButton text={`movzz.app/join/REF${spotNumber}`} />
                     </div>
                     <div className="flex justify-center gap-2">
                       {[
@@ -338,11 +352,14 @@ export default function WaitlistSection() {
     return e
   }
 
+  const [apiError, setApiError] = useState('')
+
   const handleSubmit = async (ev: React.FormEvent) => {
     ev.preventDefault()
     const e = validate()
     if (Object.keys(e).length) { setErrors(e); return }
     setErrors({})
+    setApiError('')
     setFormState('submitting')
     try {
       const res  = await fetch('/api/waitlist', {
@@ -351,12 +368,21 @@ export default function WaitlistSection() {
         body:    JSON.stringify({ phone, email, city }),
       })
       const data = await res.json()
-      if (data.spotNumber) setSpot(data.spotNumber)
-      else setSpot(waitlistCount + 1)
+      if (!res.ok) {
+        setApiError(data.error || 'Something went wrong. Please try again.')
+        setFormState('error')
+        return
+      }
+      const spotNum = data.spotNumber || waitlistCount + 1
+      setSpot(spotNum)
+      setPhone('')
+      setEmail('')
+      setCity('Chennai')
+      setFormState('success')
     } catch {
-      setSpot(waitlistCount + 1)
+      setApiError('Network error. Please check your connection and try again.')
+      setFormState('error')
     }
-    setFormState('success')
   }
 
   return (
@@ -401,6 +427,32 @@ export default function WaitlistSection() {
             <AnimatePresence mode="wait">
               {formState === 'success' ? (
                 <SuccessState key="success" spotNumber={spot} city={city} />
+              ) : formState === 'error' ? (
+                <motion.div
+                  key="error"
+                  initial={{ opacity: 0, scale: 0.96 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="flex flex-col items-center text-center py-8 gap-4"
+                >
+                  <div
+                    className="w-14 h-14 rounded-2xl flex items-center justify-center"
+                    style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)' }}
+                  >
+                    <svg className="w-7 h-7 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="text-white/80 font-semibold text-base mb-1">Submission failed</p>
+                    <p className="text-white/40 text-sm">{apiError}</p>
+                  </div>
+                  <button
+                    onClick={() => { setFormState('idle'); setApiError('') }}
+                    className="btn-primary px-6 py-2.5 text-sm"
+                  >
+                    Try again
+                  </button>
+                </motion.div>
               ) : (
                 <motion.form
                   key="form"
