@@ -5,6 +5,7 @@ const SHEET_WEBHOOK  = process.env.GOOGLE_SHEET_WEBHOOK_URL
 const GMAIL_USER     = process.env.GMAIL_USER
 const GMAIL_PASS     = process.env.GMAIL_APP_PASSWORD   // Gmail App Password (not normal password)
 const FAST2SMS_KEY   = process.env.FAST2SMS_API_KEY
+const BASE_COUNT     = parseInt(process.env.WAITLIST_BASE_COUNT || '500', 10)
 
 export async function POST(req: NextRequest) {
   try {
@@ -14,11 +15,20 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Missing fields' }, { status: 400 })
     }
 
-    const spotNumber = 528 + Math.floor(Math.random() * 50) + 1
-
-    // ── 1. Save to Google Sheets ──────────────────────────────
+    // Sequential spot number based on actual sheet row count
+    let sheetRows = 0
     if (SHEET_WEBHOOK) {
-      await fetch(SHEET_WEBHOOK, {
+      try {
+        const res = await fetch(SHEET_WEBHOOK)
+        const data = await res.json()
+        sheetRows = typeof data.count === 'number' ? data.count : 0
+      } catch { /* fall back to 0 */ }
+    }
+    const spotNumber = BASE_COUNT + sheetRows + 1
+
+    // ── 1. Save to Google Sheets (fire-and-forget) ────────────
+    if (SHEET_WEBHOOK) {
+      fetch(SHEET_WEBHOOK, {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -31,7 +41,7 @@ export async function POST(req: NextRequest) {
       }).catch(err => console.error('Sheet error:', err))
     }
 
-    // ── 2. Confirmation email via Gmail (free) ────────────────
+    // ── 2. Confirmation email via Gmail (fire-and-forget) ─────
     if (GMAIL_USER && GMAIL_PASS && email) {
       const transporter = nodemailer.createTransport({
         host:       'smtp.gmail.com',
@@ -40,7 +50,7 @@ export async function POST(req: NextRequest) {
         requireTLS: true,
         auth: { user: GMAIL_USER, pass: GMAIL_PASS },
       })
-      await transporter.sendMail({
+      transporter.sendMail({
         from:    `"Movzz" <${GMAIL_USER}>`,
         to:      email,
         subject: `You're #${spotNumber} on the Movzz waitlist 🚀`,
