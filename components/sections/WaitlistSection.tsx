@@ -465,6 +465,11 @@ export default function WaitlistSection() {
                       <option value="Bangalore">Bangalore</option>
                       <option value="Mumbai">Mumbai</option>
                       <option value="Hyderabad">Hyderabad</option>
+                      <option value="Delhi">Delhi / NCR</option>
+                      <option value="Pune">Pune</option>
+                      <option value="Kolkata">Kolkata</option>
+                      <option value="Ahmedabad">Ahmedabad</option>
+                      <option value="Coimbatore">Coimbatore</option>
                       <option value="Other">Other</option>
                     </select>
                   </div>

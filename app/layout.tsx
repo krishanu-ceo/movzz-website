@@ -25,6 +25,7 @@ const jetbrainsMono = JetBrains_Mono({
 })
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://movzzy.com'),
   title: 'Movzz — Never Miss a Ride Again',
   description:
     'India\'s first AI-powered ride reliability platform. One app. Every provider. 96% success rate. Launching in Chennai, March 2026.',
@@ -34,6 +35,13 @@ export const metadata: Metadata = {
     description:
       'Stop switching between Uber, Ola and Rapido. Movzz AI picks the most reliable provider and confirms your ride in 8 seconds.',
     type: 'website',
+    url: 'https://movzzy.com',
+    siteName: 'Movzz',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Movzz — Never Miss a Ride Again',
+    description: 'Stop switching between Uber, Ola and Rapido. Movzz AI confirms your ride in 8 seconds.',
   },
 }
 
