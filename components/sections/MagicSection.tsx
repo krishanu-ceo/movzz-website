@@ -196,7 +196,7 @@ export default function MagicSection() {
           >
             {[
               { name: 'Movzz (AI‑optimized)', score: 96, color: '#3b82f6', highlight: true },
-              { name: 'Fast Track Cabs',       score: 89, color: '#10B981' },
+              { name: 'Fast Track Cabs',       score: 89, color: '#0EA5E9' },
               { name: 'Ola',                   score: 78, color: '#F59E0B' },
               { name: 'Uber',                  score: 74, color: '#6B7280' },
               { name: 'Rapido',                score: 69, color: '#F97316' },

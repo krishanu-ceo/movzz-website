@@ -5,7 +5,7 @@ import { motion, useInView, useScroll, useTransform, AnimatePresence } from 'fra
 import Image from 'next/image'
 
 const providers = [
-  { name: 'Fast Track',   score: 96, color: '#10B981' },
+  { name: 'Fast Track',   score: 96, color: '#3B82F6' },
   { name: 'Chennai Cabs', score: 89, color: '#3B82F6' },
   { name: 'Ola',          score: 78, color: '#F59E0B' },
   { name: 'Uber',         score: 74, color: '#6B7280' },

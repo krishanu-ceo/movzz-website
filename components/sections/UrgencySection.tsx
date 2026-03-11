@@ -1,7 +1,7 @@
 'use client'
 
-import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
+import { useWaitlistCount } from '@/hooks/useWaitlistCount'
 
 const benefits = [
   {
@@ -37,63 +37,65 @@ const benefits = [
   },
 ]
 
-function Countdown() {
-  const target = new Date('2026-04-30T00:00:00').getTime()
-  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 })
-
-  useEffect(() => {
-    const calc = () => {
-      const diff = Math.max(0, target - Date.now())
-      setTimeLeft({
-        days:    Math.floor(diff / 86400000),
-        hours:   Math.floor((diff % 86400000) / 3600000),
-        minutes: Math.floor((diff % 3600000)  / 60000),
-        seconds: Math.floor((diff % 60000)    / 1000),
-      })
-    }
-    calc()
-    const interval = setInterval(calc, 1000)
-    return () => clearInterval(interval)
-  }, [target])
-
-  const pad = (n: number) => String(n).padStart(2, '0')
-
+function LaunchTBA() {
   return (
-    <div className="flex items-center justify-center gap-2">
-      {[
-        { label: 'Days',  value: timeLeft.days    },
-        { label: 'Hours', value: timeLeft.hours   },
-        { label: 'Min',   value: timeLeft.minutes },
-        { label: 'Sec',   value: timeLeft.seconds },
-      ].map(({ label, value }, i) => (
-        <div key={label} className="flex items-center gap-2">
-          <div className="text-center">
-            <motion.div
-              key={value}
-              initial={{ y: -8, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.2 }}
-              className="rounded-xl px-4 py-3 min-w-[68px]"
-              style={{
-                background: 'rgba(3,8,18,0.92)',
-                border: '1px solid rgba(37,99,235,0.2)',
-                boxShadow: '0 0 20px rgba(37,99,235,0.06), inset 0 1px 0 rgba(255,255,255,0.04)',
-              }}
-            >
-              <div className="font-mono font-black text-3xl text-white tabular-nums">{pad(value)}</div>
-            </motion.div>
-            <div className="text-white/25 text-[10px] mt-1.5 uppercase tracking-[0.2em] font-medium">{label}</div>
+    <div className="text-center">
+      <p className="text-white/25 text-xs mb-6 uppercase tracking-[0.22em] font-medium font-mono">
+        Chennai Beta Launch Window
+      </p>
+      <div className="flex items-center justify-center gap-2 mb-5">
+        {['??', '??', '??', '??'].map((val, i) => (
+          <div key={i} className="flex items-center gap-2">
+            <div className="text-center">
+              <div
+                className="relative rounded-xl px-4 py-3 min-w-[68px] overflow-hidden"
+                style={{
+                  background: 'rgba(3,8,18,0.92)',
+                  border: '1px solid rgba(37,99,235,0.15)',
+                }}
+              >
+                <div className="scanlines absolute inset-0 opacity-40 pointer-events-none" />
+                <div className="font-mono font-black text-3xl tabular-nums select-none"
+                  style={{ color: 'rgba(37,99,235,0.35)', letterSpacing: '0.1em' }}>
+                  {val}
+                </div>
+              </div>
+              <div className="text-white/18 text-[10px] mt-1.5 uppercase tracking-[0.2em] font-medium font-mono">
+                {['Days', 'Hours', 'Min', 'Sec'][i]}
+              </div>
+            </div>
+            {i < 3 && (
+              <div className="font-mono font-black text-xl text-white/10 mb-4 select-none">:</div>
+            )}
           </div>
-          {i < 3 && (
-            <div className="font-mono font-black text-xl text-white/15 mb-4 select-none">:</div>
-          )}
-        </div>
-      ))}
+        ))}
+      </div>
+      <motion.div
+        initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}
+        className="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full"
+        style={{ background: 'rgba(37,99,235,0.06)', border: '1px solid rgba(37,99,235,0.18)' }}
+      >
+        <motion.div
+          animate={{ opacity: [1, 0.2, 1] }}
+          transition={{ duration: 1.4, repeat: Infinity }}
+          className="w-1.5 h-1.5 rounded-full bg-blue-400"
+        />
+        <span className="font-mono text-xs text-blue-400/65 tracking-[0.2em] uppercase">
+          Announcing very soon — waitlist gets first access
+        </span>
+      </motion.div>
     </div>
   )
 }
 
+const TOTAL_SPOTS = 500
+
 export default function UrgencySection() {
+  const { count: waitlistCount } = useWaitlistCount()
+  const claimed = Math.min(waitlistCount, TOTAL_SPOTS)
+  const spotsLeft = Math.max(0, TOTAL_SPOTS - claimed)
+  const pct = Math.min(100, (claimed / TOTAL_SPOTS) * 100).toFixed(1)
+
   return (
     <section
       id="urgency"
@@ -206,7 +208,7 @@ export default function UrgencySection() {
               <p className="text-white/30 text-xs mt-0.5">Only first 500 users qualify</p>
             </div>
             <div className="text-right">
-              <div className="font-mono font-black text-2xl text-white/88">153</div>
+              <div className="font-mono font-black text-2xl text-white/88">{spotsLeft}</div>
               <div className="text-white/25 text-xs mt-0.5">spots left</div>
             </div>
           </div>
@@ -218,14 +220,14 @@ export default function UrgencySection() {
                 boxShadow: '0 0 12px rgba(37,99,235,0.5)',
               }}
               initial={{ width: '0%' }}
-              whileInView={{ width: '69.4%' }}
+              whileInView={{ width: `${pct}%` }}
               viewport={{ once: true }}
               transition={{ duration: 1.6, ease: [0.22, 1, 0.36, 1], delay: 0.3 }}
             />
           </div>
           <div className="flex justify-between mt-2.5">
-            <span className="text-white/22 text-xs">347 claimed</span>
-            <span className="font-medium text-xs" style={{ color: 'rgba(96,165,250,0.7)' }}>69% filled</span>
+            <span className="text-white/22 text-xs">{claimed} claimed</span>
+            <span className="font-medium text-xs" style={{ color: 'rgba(96,165,250,0.7)' }}>{pct}% filled</span>
           </div>
         </motion.div>
 
@@ -240,7 +242,7 @@ export default function UrgencySection() {
           <p className="text-white/25 text-xs mb-6 uppercase tracking-[0.22em] font-medium">
             Chennai Beta Launch In
           </p>
-          <Countdown />
+          <LaunchTBA />
         </motion.div>
       </div>
     </section>

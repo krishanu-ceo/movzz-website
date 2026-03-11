@@ -8,26 +8,26 @@ import { useWaitlistCount } from '@/hooks/useWaitlistCount'
 
 const testimonials = [
   {
-    quote: "I showed this to my whole team. Everyone's waiting. This is exactly what Chennai needs right now.",
-    name: 'Sharma R.',
-    role: 'Fast Track Call Taxi Owner',
-    avatar: 'SR',
+    quote: "This is exactly what Chennai needs right now. Showed it to my whole team — everyone's joining the waitlist.",
+    name: 'Waitlist Member',
+    role: 'Chennai · Joined early',
+    avatar: '✦',
     stars: 5,
     color: '#2563EB',
   },
   {
     quote: "Missed a client meeting because Uber cancelled on me 3 times. If this existed last month, I'd have saved ₹60,000.",
-    name: 'Priya K.',
-    role: 'Marketing Director, Chennai',
-    avatar: 'PK',
+    name: 'Waitlist Member',
+    role: 'Chennai · Joined early',
+    avatar: '✦',
     stars: 5,
     color: '#2563EB',
   },
   {
-    quote: "Finally someone's solving the actual problem. Not adding more apps—fixing the reliability.",
-    name: 'Vikram S.',
-    role: 'Software Engineer, Bangalore',
-    avatar: 'VS',
+    quote: "Finally someone's solving the actual problem. Not adding more apps — fixing the reliability.",
+    name: 'Waitlist Member',
+    role: 'Bangalore · Joined early',
+    avatar: '✦',
     stars: 5,
     color: '#8B5CF6',
   },
@@ -82,7 +82,7 @@ export default function SocialProofSection() {
             <span className="gradient-text-blue">Trust Movzz</span>
           </h2>
           <p className="text-white/28 text-xs font-mono tracking-[0.25em] uppercase mt-2">
-            Live data · +23 joined this hour · Chennai &amp; beyond
+            Live data · Growing fast · Chennai &amp; beyond
           </p>
         </motion.div>
 
@@ -134,7 +134,7 @@ export default function SocialProofSection() {
             transition={{ delay: 0.55 }}
             className="text-white/28 text-sm mt-1.5 flex items-center justify-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-blue-400 inline-block animate-pulse" />
-            +23 joined in the last hour
+            and counting · be part of the founding squad
           </motion.p>
         </motion.div>
 
@@ -217,8 +217,8 @@ export default function SocialProofSection() {
               {/* Author */}
               <div className="flex items-center gap-3">
                 <div
-                  className="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0"
-                  style={{ background: t.color }}
+                  className="w-10 h-10 rounded-full flex items-center justify-center text-white flex-shrink-0"
+                  style={{ background: `${t.color}22`, border: `1px solid ${t.color}44`, fontSize: '16px' }}
                 >
                   {t.avatar}
                 </div>

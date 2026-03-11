@@ -81,19 +81,21 @@ export default function Footer() {
                 <span className="absolute w-2 h-2 rounded-full bg-blue-400 animate-ping opacity-50" />
                 <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
               </span>
-              <span className="text-white/22 text-xs">Launching March 2026 · Chennai</span>
+              <span className="text-white/22 text-xs">Launch date dropping soon · Chennai</span>
             </div>
             {/* Social icons */}
             <div className="flex items-center gap-3">
               {[
                 { icon: <TwitterIcon />,   href: '#', label: 'Twitter' },
-                { icon: <LinkedInIcon />,  href: '#', label: 'LinkedIn' },
-                { icon: <InstagramIcon />, href: '#', label: 'Instagram' },
+                { icon: <LinkedInIcon />,  href: 'https://www.linkedin.com/company/movzz', label: 'LinkedIn' },
+                { icon: <InstagramIcon />, href: 'https://www.instagram.com/movzzofficial/', label: 'Instagram' },
               ].map(({ icon, href, label }) => (
                 <a
                   key={label}
                   href={href}
                   aria-label={label}
+                  target={href !== '#' ? '_blank' : undefined}
+                  rel={href !== '#' ? 'noopener noreferrer' : undefined}
                   className="w-8 h-8 rounded-lg flex items-center justify-center text-white/25 hover:text-white/65 transition-all duration-200 hover:scale-110"
                   style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}
                 >

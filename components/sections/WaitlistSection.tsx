@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useWaitlistCount } from '@/hooks/useWaitlistCount'
 
@@ -308,8 +308,8 @@ function SuccessState({ spotNumber, city }: { spotNumber: number; city: string }
                     <p className="text-white/75 font-semibold text-sm mb-0.5">Move up the list faster</p>
                     <p className="text-white/35 text-xs mb-3">Refer 3 friends → skip 100 spots + earn ₹100 extra</p>
                     <div className="flex items-center gap-2 rounded-xl px-3 py-2 mb-3" style={{ background: 'rgba(3,8,18,0.7)', border: '1px solid rgba(255,255,255,0.07)' }}>
-                      <span className="text-white/45 text-xs font-mono flex-1 truncate">movzz.app/join/REF{spotNumber}</span>
-                      <CopyButton text={`movzz.app/join/REF${spotNumber}`} />
+                      <span className="text-white/45 text-xs font-mono flex-1 truncate">movzzy.com/ref/{spotNumber}</span>
+                      <CopyButton text={`movzzy.com/ref/${spotNumber}`} />
                     </div>
                     <div className="flex justify-center gap-2">
                       {[
