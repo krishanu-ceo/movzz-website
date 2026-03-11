@@ -69,21 +69,33 @@ export async function POST(req: NextRequest) {
       }).catch(err => console.error('Sheet error:', err))
     }
 
-    // ── 2. Confirmation email via Gmail (fire-and-forget) ─────
+    // ── 2. Confirmation email via Gmail ───────────────────────
     if (GMAIL_USER && GMAIL_PASS && email) {
-      const transporter = nodemailer.createTransport({
-        host:       'smtp.gmail.com',
-        port:       587,
-        secure:     false,
-        requireTLS: true,
-        auth: { user: GMAIL_USER, pass: GMAIL_PASS },
-      })
-      transporter.sendMail({
-        from:    `"Movzz" <${GMAIL_USER}>`,
-        to:      email,
-        subject: `You're #${spotNumber} on the Movzz waitlist 🚀`,
-        html:    buildEmailHtml(spotNumber, city),
-      }).catch(err => console.error('Email error:', err))
+      try {
+        const transporter = nodemailer.createTransport({
+          host:       'smtp.gmail.com',
+          port:       587,
+          secure:     false,
+          requireTLS: true,
+          auth: { user: GMAIL_USER, pass: GMAIL_PASS },
+          tls: { rejectUnauthorized: false },
+        })
+        await transporter.sendMail({
+          from:    `"Movzz Waitlist" <${GMAIL_USER}>`,
+          to:      email,
+          replyTo: GMAIL_USER,
+          subject: `You're #${spotNumber} on the Movzz waitlist`,
+          text:    buildEmailText(spotNumber, city),
+          html:    buildEmailHtml(spotNumber, city),
+          headers: {
+            'X-Mailer': 'Movzz-Waitlist',
+            'Precedence': 'bulk',
+          },
+        })
+        console.log(`[email] sent to ${email} (spot #${spotNumber})`)
+      } catch (err) {
+        console.error('[email] FAILED to send to', email, '— error:', err)
+      }
     }
 
     // ── 3. SMS via Fast2SMS (fire-and-forget) ─────────────────
@@ -102,6 +114,23 @@ export async function POST(req: NextRequest) {
     console.error('Waitlist API error:', err)
     return NextResponse.json({ error: 'Server error. Please try again.' }, { status: 500 })
   }
+}
+
+/* ── Email plain-text template ───────────────────────────────── */
+function buildEmailText(spot: number, city: string) {
+  return `MOVZZ — You're on the waitlist!
+
+Your spot: #${spot}
+City: ${city}
+
+You're in! We're launching in Chennai in 2026.
+You'll be among the first to get AI-confirmed rides in 8 seconds — across Uber, Ola, Rapido & more.
+
+96% ride success rate · 8s confirmation · 5 providers
+
+—
+Movzz — India's first AI-powered ride reliability platform
+Chennai launch · 2026`
 }
 
 /* ── Email HTML template ─────────────────────────────────────── */
