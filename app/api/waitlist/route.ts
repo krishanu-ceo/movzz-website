@@ -34,7 +34,10 @@ export async function POST(req: NextRequest) {
     // ── 2. Confirmation email via Gmail (free) ────────────────
     if (GMAIL_USER && GMAIL_PASS && email) {
       const transporter = nodemailer.createTransport({
-        service: 'gmail',
+        host:       'smtp.gmail.com',
+        port:       587,
+        secure:     false,
+        requireTLS: true,
         auth: { user: GMAIL_USER, pass: GMAIL_PASS },
       })
       await transporter.sendMail({
