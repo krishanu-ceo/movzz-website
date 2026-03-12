@@ -74,7 +74,7 @@ export async function POST(req: NextRequest) {
       try {
         const resend = new Resend(RESEND_API_KEY)
         const { error } = await resend.emails.send({
-          from:    'Movzz Waitlist <waitlist@movzzy.com>',
+          from:    'Movzz Waitlist <krishanu@movzzy.com>',
           to:      email,
           replyTo: GMAIL_USER ?? 'krishanu@movzzy.com',
           subject: `You're #${spotNumber} on the Movzz waitlist`,
